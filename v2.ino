@@ -28,16 +28,23 @@ std_msgs::String str_msg;
 
 ros::Publisher output_data("output_data", &str_msg);
 
+int turn;
+float target;
+
 void message_Cb(const std_msgs::String& msg){
   char* message = msg.data;
   if (strcmp(message, "U") == 0){
     target = 2.5;
+    delay(10);
   } else if (strcmp(message, "D") == 0) {
     target = -2.5;
+    delay(10);
   } else if (strcmp(message, "L") == 0) {
     turn = -120;
+    delay(10);
   } else if (strcmp(message, "R") == 0) {
     turn = 120;
+    delay(10);
   }
   str_msg.data = msg.data;
 }
@@ -50,8 +57,6 @@ unsigned long time_pub_previous;
 //sensor
 MPU6050 imu(Wire);
 void setup() {
-    Serial.begin(9600);
-
     //ROS
     nh.initNode();
     nh.subscribe(keyboard);
@@ -86,8 +91,8 @@ void loop() {
     imu.update();
     float Angle = imu.getAngleX();
     float gyro =  imu.getGyroX();
-    int turn = 0;
-    float target = 0;
+    turn = 0;
+    target = 0;
 
     //target 平衡繳,Angle 旋轉軸,gyro 角速度
     float anglespeed = anglebalance(target,Angle,gyro);
@@ -97,7 +102,7 @@ void loop() {
 
     time_pub = millis();
 
-    if (time_pub - time_pub_previous > 3000){
+    if (time_pub - time_pub_previous > 500){
       output_data.publish(&str_msg);
       time_pub_previous = millis();
     }
