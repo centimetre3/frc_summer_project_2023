@@ -31,11 +31,13 @@ ros::Publisher output_data("output_data", &str_msg);
 void message_Cb(const std_msgs::String& msg){
   char* message = msg.data;
   if (strcmp(message, "U") == 0){
-
+    digitalWrite(13, HIGH-digitalRead(13));
   } else if (strcmp(message, "D") == 0) {
+    digitalWrite(13, HIGH-digitalRead(13));
   } else if (strcmp(message, "L") == 0) {
+    digitalWrite(13, HIGH-digitalRead(13));
   } else if (strcmp(message, "R") == 0) {
-    //some flag equal true
+    digitalWrite(13, HIGH-digitalRead(13));
   }
   str_msg.data = msg.data;
 }
