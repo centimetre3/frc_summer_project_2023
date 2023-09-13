@@ -38,19 +38,23 @@ void message_Cb(const std_msgs::String& msg){
     //some flag equal true
   }
   str_msg.data = msg.data;
-  output_data.publish(&str_msg);
 }
 
 ros::Subscriber<std_msgs::String> keyboard("keyboard", &message_Cb);
+
+unsigned long time_pub;
+unsigned long time_pub_previous;
 
 //sensor
 MPU6050 imu(Wire);
 void setup() {
     Serial.begin(9600);
 
+    //ROS
     nh.initNode();
     nh.subscribe(keyboard);
     nh.advertise(output_data);
+    time_pub_previous = 0;
 
     // pin settings
     pinMode(IN1, OUTPUT);
@@ -111,6 +115,13 @@ void loop() {
     float motorspeed = motorbalance(calculateENC());
     pwmbalance = anglespeed - motorspeed;
     SpeedControl(pwmbalance,turn);
+
+    time_pub = millis();
+
+    if (time_pub - time_pub_previous > 3000){
+      output_data.publish(&str_msg);
+      time_pub_previous = millis();
+    }
 
     nh.spinOnce();
     delay(1);
