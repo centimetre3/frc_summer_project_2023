@@ -1,8 +1,12 @@
 #include <Wire.h>
 #include <MPU6050_light.h>
-#include<math.h>
+#include <math.h>
 #include <util/atomic.h>
 #include <stdio.h>
+
+//ROS
+#include <ros.h>
+#include <std_msgs/String.h>
 
 //pins
 //left
@@ -18,11 +22,36 @@
 #define IN3 9
 #define IN4 8
 
+//ROS
+ros::NodeHandle nh;
+std_msgs::String str_msg;
+
+ros::Publisher output_data("output_data", &str_msg);
+
+void message_Cb(const std_msgs::String& msg){
+  char* message = msg.data;
+  if (strcmp(message, "U") == 0){
+
+  } else if (strcmp(message, "D") == 0) {
+  } else if (strcmp(message, "L") == 0) {
+  } else if (strcmp(message, "R") == 0) {
+    //some flag equal true
+  }
+  str_msg.data = msg.data;
+  output_data.publish(&str_msg);
+}
+
+ros::Subscriber<std_msgs::String> keyboard("keyboard", &message_Cb);
+
 //sensor
 MPU6050 imu(Wire);
 void setup() {
     Serial.begin(9600);
-    // put your setup code here, to run once:
+
+    nh.initNode();
+    nh.subscribe(keyboard);
+    nh.advertise(output_data);
+
     // pin settings
     pinMode(IN1, OUTPUT);
     pinMode(IN2, OUTPUT);
@@ -82,6 +111,9 @@ void loop() {
     float motorspeed = motorbalance(calculateENC());
     pwmbalance = anglespeed - motorspeed;
     SpeedControl(pwmbalance,turn);
+
+    nh.spinOnce();
+    delay(1);
 }
 
 //馬達pwr<255,kpangle*theta(-20~20)<255
@@ -90,7 +122,8 @@ float kpangle = 8;
 float kdangle = 0.075;
 
 float anglespeed ;
-float anglebalance(float targrt,float Angle,float gyro){
+
+float anglebalance(float targrt, float Angle, float gyro){
   anglespeed = kpangle*(Angle-targrt) + kdangle*gyro;
 
   return anglespeed;
@@ -102,6 +135,7 @@ int encoder_least = 0;
 float encoder = 0;
 float encoder_integral = 0;
 float motorspeed;
+
 float motorbalance(int encoder_least){
   encoder *= 0.8;
   encoder += encoder_least*0.3;
@@ -222,6 +256,7 @@ void readEncoderR(){
   }
   pos_iR = pos_iR + ticks;
 }
+
 int calculateENC(){
   int posL = 0,posR = 0;
   noInterrupts();
