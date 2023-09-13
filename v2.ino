@@ -196,8 +196,8 @@ int SpeedControl(float vt,int turn) {
     pwr = 255;
   }
   if(turn != 0){
-    setMotor(dir,turn,PWM_l,IN1,IN2);
-    setMotor(dir,turn,PWM_r,IN3,IN4);      
+    setMotor(1,turn,PWM_l,IN1,IN2);
+    setMotor(-1,turn,PWM_r,IN3,IN4);      
   }
   else{
   setMotor(dir,pwr,PWM_l,IN1,IN2);
