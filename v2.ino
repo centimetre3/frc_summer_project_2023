@@ -31,13 +31,13 @@ ros::Publisher output_data("output_data", &str_msg);
 void message_Cb(const std_msgs::String& msg){
   char* message = msg.data;
   if (strcmp(message, "U") == 0){
-    digitalWrite(13, HIGH-digitalRead(13));
+    target = 2.5;
   } else if (strcmp(message, "D") == 0) {
-    digitalWrite(13, HIGH-digitalRead(13));
+    target = -2.5;
   } else if (strcmp(message, "L") == 0) {
-    digitalWrite(13, HIGH-digitalRead(13));
+    turn = -120;
   } else if (strcmp(message, "R") == 0) {
-    digitalWrite(13, HIGH-digitalRead(13));
+    turn = 120;
   }
   str_msg.data = msg.data;
 }
@@ -80,12 +80,6 @@ void setup() {
 }
 
 float pwmbalance;
-enum direct{
-  left,
-  right,
-  toward,
-  afterward,
-};
 
 void loop() {
     // put your main code here, to run repeatedly:
@@ -94,24 +88,7 @@ void loop() {
     float gyro =  imu.getGyroX();
     int turn = 0;
     float target = 0;
-    
-//    if(Serial.available()){
-//      int order = Serial.read();
-//      switch(order){
-//        case left:
-//          turn = 5;
-//          break;
-//        case right:
-//          turn = -5;
-//          break; 
-//        case toward:
-//          target = 5;
-//          break;
-//        case afterward:
-//          target = -5;
-//          break;           
-//      }
-//    }
+
     //target 平衡繳,Angle 旋轉軸,gyro 角速度
     float anglespeed = anglebalance(target,Angle,gyro);
     float motorspeed = motorbalance(calculateENC());
