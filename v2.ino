@@ -35,16 +35,19 @@ void message_Cb(const std_msgs::String& msg){
   char* message = msg.data;
   if (strcmp(message, "U") == 0){
     target = 2.5;
-    delay(10);
+    turn = 0;
   } else if (strcmp(message, "D") == 0) {
     target = -2.5;
-    delay(10);
+    turn = 0;
   } else if (strcmp(message, "L") == 0) {
+    target = 0;
     turn = -120;
-    delay(10);
   } else if (strcmp(message, "R") == 0) {
+    target = 0;
     turn = 120;
-    delay(10);
+  } else if (strcmp(message, "S") == 0){
+    target = 0;
+    turn = 0;
   }
   str_msg.data = msg.data;
 }
